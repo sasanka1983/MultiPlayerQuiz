@@ -1,0 +1,17 @@
+﻿@model Adapter.Controllers.QuestionOptions
+
+@{
+    ViewBag.Title = "Question";
+}
+
+<h2>Question</h2>
+
+<p>Question </p>
+@Model.Description
+
+@foreach (var option in Model.OptionsList)
+{
+    <br />
+    @Html.RadioButton("options", 1) @option.Description
+}
+
