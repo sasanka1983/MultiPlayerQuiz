@@ -5,8 +5,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.Practices.EnterpriseLibrary.Caching;
-using Microsoft.Practices.EnterpriseLibrary.Caching.Expirations;
+//using Microsoft.Practices.EnterpriseLibrary.Caching;
+//using Microsoft.Practices.EnterpriseLibrary.Caching.Expirations;
 
 namespace Adapter.Controllers
 {
