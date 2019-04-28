@@ -86,12 +86,11 @@ namespace Adapter.Controllers
         }
 
 
-        //public ActionResult List()
-        //{
-
-        //}
-
-
+        public ActionResult List()
+        {
+            var quizList = GetAllQuizRecords();
+            return View(quizList);
+        }
 
         private QuestionOptions GetQuizQuestion(Guid quizId)
         {
@@ -103,7 +102,7 @@ namespace Adapter.Controllers
             SqlCommand command = new SqlCommand(
           @"select question.Id,question.Description,questionoptions.Description as OptionDescription,IsAnswer from question 
 inner join quizquestions  on question.id = quizquestions.QuestionId
-INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.QuestionId  WHERE QuizId='" + quizId + "' AND QuizQuestions.IsPublished=0" +
+INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.QuestionId  WHERE QuizId='" + quizId + "' AND ISNULL(QuizQuestions.IsPublished,0)=0" +
 "Order by question.Id",
           connection);
             connection.Open();
@@ -185,7 +184,7 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
             var date = DateTime.Now.ToString("dd/MM/yyyy hh:mm");
 
             SqlCommand command = new SqlCommand(
-          @"Update quiz SET IsQuizCompleted=1 Where id='"+ quizId+"' ; Update score set score =" + score + " where userid='" + userId + "' AND quizId='" + quizId + "'",
+          @"Update quiz SET IsQuizCompleted=1 Where id='" + quizId + "' ; Update score set score =" + score + " where userid='" + userId + "' AND quizId='" + quizId + "'",
           connection);
             connection.Open();
 
@@ -198,7 +197,7 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
 
             SqlConnection connection = new SqlConnection(CONNECTION_STRING);
             SqlCommand command = new SqlCommand(
-          "SELECT * FROM Quiz where IsQuizCompleted=0",
+          "SELECT * FROM Quiz where IsQuizCompleted=0 AND StartTime",
           connection);
             connection.Open();
 
