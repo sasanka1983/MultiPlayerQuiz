@@ -7,17 +7,21 @@
 <h2>Index</h2>
 @using (Html.BeginForm("Index", "Home", FormMethod.Post))
 {
-<table>
-    <tr>
-        <td>@Html.LabelFor(x => x.Email)</td>
-        <td>@Html.TextBoxFor(x => x.Email)</td>
-    </tr>
-    <tr>
-        <td>@Html.LabelFor(x => x.Password)</td>
-        <td>@Html.TextBoxFor(x => x.Password)</td>
-    </tr>
-</table>
+    <table>
+        <tr>
+            <td>@Html.LabelFor(x => x.Email)</td>
+            <td>@Html.TextBoxFor(x => x.Email)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Password)</td>
+            <td>@Html.PasswordFor(x => x.Password)</td>
+        </tr>
+    </table>
 
-<input type="submit" name="submit" />
+
+
+    <input type="submit" name="submit" />
+    <br />
+    @ViewBag.ErrorMessage
 }
 

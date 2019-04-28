@@ -13,7 +13,11 @@ namespace Adapter.Controllers
         private static string CONNECTION_STRING = ConfigurationManager.ConnectionStrings["Adapters"].ToString();
         public ActionResult Index(string message = "")
         {
-
+            ViewBag.ErrorMessage = string.Empty;
+            if(!string.IsNullOrEmpty(message))
+            {
+                ViewBag.ErrorMessage = message;
+            }
             return View();
         }
 

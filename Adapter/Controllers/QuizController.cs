@@ -6,8 +6,6 @@ using System.Linq;
 using System.Runtime.Caching;
 using System.Web;
 using System.Web.Mvc;
-//using Microsoft.Practices.EnterpriseLibrary.Caching;
-//using Microsoft.Practices.EnterpriseLibrary.Caching.Expirations;
 
 namespace Adapter.Controllers
 {
@@ -86,6 +84,14 @@ namespace Adapter.Controllers
 
             return RedirectToAction("Index", new { isFromPost = true });
         }
+
+
+        //public ActionResult List()
+        //{
+
+        //}
+
+
 
         private QuestionOptions GetQuizQuestion(Guid quizId)
         {
@@ -184,6 +190,42 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
             connection.Open();
 
             return command.ExecuteNonQuery();
+        }
+
+        private List<Quiz> GetAllQuizRecords()
+        {
+            List<Quiz> quizList = new List<Quiz>();
+
+            SqlConnection connection = new SqlConnection(CONNECTION_STRING);
+            SqlCommand command = new SqlCommand(
+          "SELECT * FROM Quiz where IsQuizCompleted=0",
+          connection);
+            connection.Open();
+
+            SqlDataReader reader = command.ExecuteReader();
+
+            Quiz quiz;
+
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    quiz = new Quiz();
+                    quiz.Id = new Guid(Convert.ToString(reader["Id"]));
+                    quiz.Name = Convert.ToString(reader["Name"]);
+                    quiz.StartTime = Convert.ToDateTime(reader["StartTime"]);
+                    quiz.ElapseTime = Convert.ToInt32(reader["ElapseTime"]);
+
+                    quizList.Add((quiz));
+                }
+            }
+            else
+            {
+                Console.WriteLine("No rows found.");
+            }
+            reader.Close();
+
+            return quizList;
         }
 
         private Quiz GetQuizRecords()
