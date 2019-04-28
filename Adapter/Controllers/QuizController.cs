@@ -312,6 +312,7 @@ left join(select * from score where userid = '" + userId + "') Score on quiz.id 
         public string Password { get; set; }
         public Guid QuizId { get; set; }
         public int Score { get; set; }
+        public string Name { get; set; }
     }
 
 }
