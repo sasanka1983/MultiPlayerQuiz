@@ -26,6 +26,11 @@ namespace Adapter.Controllers
 
                 questions = GetQuizQuestion(quiz.Id);
 
+                var user = (User)Session["user"];
+                user.QuizId = quiz.Id;
+                Session["user"] = user;
+
+
                 questions.ElapseTime = quiz.ElapseTime;
                 ViewBag.FromPost = false;
 
@@ -47,6 +52,8 @@ namespace Adapter.Controllers
             if (questions == null)
             {
                 var user = (User)Session["user"];
+
+                UpdateScores(user.Id, user.Score, user.QuizId);
 
                 ViewBag.Score = user.Score;
                 ViewBag.UserName = user.Email;
@@ -76,17 +83,6 @@ namespace Adapter.Controllers
             quiz.IsAnswered = true;
             quizList[index] = quiz;
             Session["Questions"] = quizList;
-                // Store data in the cache    
-                //CacheItemPolicy cacheItemPolicy = new CacheItemPolicy();
-                //cacheItemPolicy.AbsoluteExpiration = DateTime.Now.AddHours(1.0);
-                //cache.Add("Questions", quizList, cacheItemPolicy);
-
-
-
-
-
-
-
 
             return RedirectToAction("Index", new { isFromPost = true });
         }
@@ -183,7 +179,7 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
             var date = DateTime.Now.ToString("dd/MM/yyyy hh:mm");
 
             SqlCommand command = new SqlCommand(
-          "Insert into score VALUES('" + Guid.NewGuid() + "','" + quizId + "','" + userId + "'," + score + ",NULL,'" + DateTime.Now + "',NULL,'" + DateTime.Now + "'",
+          @"Update quiz SET IsQuizCompleted=1 Where id='"+ quizId+"' ; Update score set score =" + score + " where userid='" + userId + "' AND quizId='" + quizId + "'",
           connection);
             connection.Open();
 
@@ -196,7 +192,7 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
 
             SqlConnection connection = new SqlConnection(CONNECTION_STRING);
             SqlCommand command = new SqlCommand(
-          "SELECT top 1 * FROM Quiz;",
+          "SELECT top 1 * FROM Quiz where IsQuizCompleted=0",
           connection);
             connection.Open();
 
@@ -255,7 +251,7 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
         public Guid Id { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-
+        public Guid QuizId { get; set; }
         public int Score { get; set; }
     }
 

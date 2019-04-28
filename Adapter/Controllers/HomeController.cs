@@ -11,7 +11,7 @@ namespace Adapter.Controllers
     public class HomeController : Controller
     {
         private static string CONNECTION_STRING = ConfigurationManager.ConnectionStrings["Adapters"].ToString();
-        public ActionResult Index()
+        public ActionResult Index(string message = "")
         {
 
             return View();
@@ -22,9 +22,14 @@ namespace Adapter.Controllers
         {
             user.Id = GetUserId(user.Email, user.Password);
 
-            Session["user"] = user;
 
-            return RedirectToAction("Index", "Quiz");
+            if (user.Id != Guid.Empty)
+            {
+                Session["user"] = user;
+
+                return RedirectToAction("Index", "Quiz");
+            }
+            return RedirectToAction("Index", new { message = "Credentials are incorrect" });
             // return View();
         }
 
@@ -49,7 +54,7 @@ namespace Adapter.Controllers
 
             SqlConnection connection = new SqlConnection(CONNECTION_STRING);
             SqlCommand command = new SqlCommand(
-          "SELECT * FROM [User] Where Name='" + username + "' And Password='" + password + "'",
+          "SELECT * FROM [User] Where Email='" + username + "' And Password='" + password + "'",
           connection);
             connection.Open();
 
