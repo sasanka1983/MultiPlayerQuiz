@@ -6,7 +6,7 @@
 
 
 
-<div class="container" style="height:700px">
+
     <div class="row">
         <div class="col-md-12">
             <h2>Question</h2>
@@ -14,15 +14,26 @@
     </div>
     <div id="quizwaitdiv" class="row">
         <div class="col-md-12">
-        <span> Quiz will start in few moments...</span>
-            </div>
+            <span> Quiz will start in few moments...</span>
+        </div>
     </div>
-    @using (Html.BeginForm())
+    @if (ViewBag.ErrorMessage != null)
     {
-        <div id="quizpanel" style="display:none">
-
-            @if (ViewBag.IsCompletedQuestions != true)
+        <div class="row">
+            <div class="col-md-12">
+                <span class="alert alert-danger">@ViewBag.ErrorMessage</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="container" style="height:700px">
+            @using (Html.BeginForm())
             {
+            <div id="quizpanel" style="display:none">
+
+                @if (ViewBag.IsCompletedQuestions != true)
+                {
 
                 <div class="row">
                     <div class="col-md-12">
@@ -34,84 +45,85 @@
                         <Span class="bg-primary">@Model.Description</Span>
                     </div>
                 </div>
-                foreach (var option in Model.OptionsList)
-                {
-                    <div class="row">
-                        <div class="col-md-12">
-                            @Html.RadioButton("chkCorrectAnswer", option.IsAnswer) @option.Description
-                        </div>
+                    foreach (var option in Model.OptionsList)
+                    {
+                <div class="row">
+                    <div class="col-md-12">
+                        @Html.RadioButton("chkCorrectAnswer", option.IsAnswer) @option.Description
                     </div>
-                }
+                </div>
+                    }
                 <div class="row" style="margin-top:15px">
                     <div class="col-md-12">
                         <span class="bg bg-info">Please wait for others to complete...</span>
                     </div>
                 </div>
 
-            }
-            else
-            {
+                }
+                else
+                {
                 <p>Hi @ViewBag.UserName. You have successfully completed your quiz. You got @ViewBag.Score. Congratulations</p>
+                }
+
+
+            </div>
             }
-
-
         </div>
+
+
+
+        if (ViewBag.FromPost == false)
+        {
+            <script>
+
+                $(document).ready(function () {
+                    var quizDate = new Date();
+                    var adjustedDate = quizDate.getTime() + 8000;
+                    var uiDate = new Date();
+                    setTimeout(function () {
+                        $("#quizpanel").show();
+                        $("#quizwaitdiv").hide();
+                        setTimeout(function () {
+                            $("form").submit();
+                        }, 10000);
+
+                    }, adjustedDate - uiDate.getTime());
+                });
+            </script>
+        }
+        else if (ViewBag.IsCompletedQuestions != true)
+        {
+            <script>
+                $(document).ready(function () {
+                    $("#quizpanel").show();
+                    $("#quizwaitdiv").hide();
+                    setTimeout(function () {
+                        $("form").submit();
+                    }, 10000);
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+                $(document).ready(function () {
+                    $("#quizpanel").show();
+                    $("#quizwaitdiv").hide();
+
+                });
+            </script>
+        }
     }
-</div>
+    @*<script>
+            $(document).ready(function () {
 
 
+                $("#answerBtn").on("click", function () {
+                    $("#answerBtn").attr("disabled", true);
+                    setTimeout(function () {
+                        $("form").submit();
+                    }, 10000);
+                });
 
-@if (ViewBag.FromPost == false)
-{
-    <script>
-
-        $(document).ready(function () {
-            var quizDate = new Date();
-            var adjustedDate = quizDate.getTime() + 8000;
-            var uiDate = new Date();
-            setTimeout(function () {
-                $("#quizpanel").show();
-                $("#quizwaitdiv").hide();
-                setTimeout(function () {
-                    $("form").submit();
-                }, 10000);
-
-            }, adjustedDate - uiDate.getTime());
-        });
-    </script>
-}
-else if (ViewBag.IsCompletedQuestions != true)
-    {
-    <script>
-        $(document).ready(function () {
-            $("#quizpanel").show();
-            $("#quizwaitdiv").hide();
-            setTimeout(function () {
-                $("form").submit();
-            }, 10000);
-        });
-    </script>
-}
-else
-{
-    <script>
-$(document).ready(function() {
-            $("#quizpanel").show();
-            $("#quizwaitdiv").hide();
-        
-    });
-    </script>
-}
-@*<script>
-        $(document).ready(function () {
-
-
-            $("#answerBtn").on("click", function () {
-                $("#answerBtn").attr("disabled", true);
-                setTimeout(function () {
-                    $("form").submit();
-                }, 10000);
             });
-
-        });
-    </script>*@
+        </script>*@

@@ -24,6 +24,12 @@ namespace Adapter.Controllers
 
                 questions = GetQuizQuestion(quiz.Id);
 
+                if(questions==null)
+                {
+                    ViewBag.ErrorMessage = "No questions available in the quiz.";
+                    return View();
+                }
+
                 var user = (User)Session["user"];
                 if (user == null)
                 {
