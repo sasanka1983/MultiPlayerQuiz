@@ -49,7 +49,7 @@ namespace Adapter.Controllers
 
             SqlConnection connection = new SqlConnection(CONNECTION_STRING);
             SqlCommand command = new SqlCommand(
-          "SELECT * FROM [User] Where Name='" + username + " And Password='" + password + "'",
+          "SELECT * FROM [User] Where Name='" + username + "' And Password='" + password + "'",
           connection);
             connection.Open();
 

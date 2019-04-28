@@ -13,19 +13,27 @@
 @using (Html.BeginForm())
 {
     <div id="quizpanel" style="display:none">
-        @Html.HiddenFor(x => x.Id)
 
-        @Model.Description
-        <br />
-        @foreach (var option in Model.OptionsList)
+        @if (ViewBag.IsCompletedQuestions != true)
         {
-            @Html.RadioButton("chkCorrectAnswer", option.IsAnswer) @option.Description
-            @*<label for="@answer.ID">answer.Text</label>
 
-                @Html.RadioButton("options", 1) @option.Description*@
+            @Html.HiddenFor(x => x.Id)
+
+            @Model.Description
             <br />
+            foreach (var option in Model.OptionsList)
+            {
+                @Html.RadioButton("chkCorrectAnswer", option.IsAnswer) @option.Description
+                <br />
+            }
+
+            @*<input type="submit" name="next" />*@
         }
-        @*<span>Time left in secs :</span><span id="elapsedTime" />*@
+        else
+        {
+            <p>Hi @ViewBag.UserName. You have successfully completed your quiz. You got @ViewBag.Score. Congratulations</p>
+        }
+
         <button class="btn btn-primary" id="answerBtn">Answer</button>
     </div>
 }
@@ -62,11 +70,11 @@ else
 
 
         $("#answerBtn").on("click", function () {
-            $("#answerBtn").attr("disabled",true);
+            $("#answerBtn").attr("disabled", true);
             setTimeout(function () {
                 $("form").submit();
             }, 10000);
         });
 
     });
-        </script>
+</script>

@@ -27,6 +27,7 @@ namespace Adapter.Controllers
                 questions = GetQuizQuestion(quiz.Id);
 
                 questions.ElapseTime = quiz.ElapseTime;
+                ViewBag.FromPost = false;
 
             }
             else
@@ -37,7 +38,23 @@ namespace Adapter.Controllers
                 var quizList = (List<QuestionOptions>)cache.Get("Questions");
 
                 questions = quizList.Where(x => x.IsAnswered == false).FirstOrDefault();
+                ViewBag.FromPost = true;
+
             }
+
+            ViewBag.IsCompletedQuestions = false;
+
+            if (questions == null)
+            {
+                var user = (User)Session["user"];
+
+                ViewBag.Score = user.Score;
+                ViewBag.UserName = user.Email;
+
+                ViewBag.IsCompletedQuestions = true;
+            }
+
+
             return View(questions);
         }
 
@@ -50,25 +67,23 @@ namespace Adapter.Controllers
                 user.Score = user.Score + 5;
                 Session["user"] = user;
             }
+
             ObjectCache cache = MemoryCache.Default;
             var quizList = (List<QuestionOptions>)cache.Get("Questions");
-
             //var quizList = (List<QuestionOptions>)Session["Questions"];
             int index = quizList.FindIndex(a => a.Id == options.Id);
             var quiz = quizList[index];
             quiz.IsAnswered = true;
             quizList[index] = quiz;
             //Session["Questions"] = quizList;
-
-           
-            if (!cache.Contains("Questions"))
-            {
                 // Store data in the cache    
                 CacheItemPolicy cacheItemPolicy = new CacheItemPolicy();
                 cacheItemPolicy.AbsoluteExpiration = DateTime.Now.AddHours(1.0);
                 cache.Add("Questions", quizList, cacheItemPolicy);
-            }
-           
+
+
+
+
 
 
 
@@ -139,17 +154,12 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
             }
 
             // quiz.OptionsList = options;
-           // Session["Questions"] = quizList;
+            //Session["Questions"] = quizList;
             ObjectCache cache = MemoryCache.Default;
-            if (!cache.Contains("Questions"))
-            {
-                // Store data in the cache    
-                CacheItemPolicy cacheItemPolicy = new CacheItemPolicy();
-                cacheItemPolicy.AbsoluteExpiration = DateTime.Now.AddHours(1.0);
-                cache.Add("Questions", quizList, cacheItemPolicy);
-            }
-            var information = (List<QuestionOptions>)cache.Get("Questions");
-
+            // Store data in the cache    
+            CacheItemPolicy cacheItemPolicy = new CacheItemPolicy();
+            cacheItemPolicy.AbsoluteExpiration = DateTime.Now.AddHours(1.0);
+            cache.Add("Questions", quizList, cacheItemPolicy);
             return quizList.FirstOrDefault();
         }
 
@@ -167,6 +177,18 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
 
         }
 
+        private int UpdateScores(Guid userId, int score, Guid quizId)
+        {
+            SqlConnection connection = new SqlConnection(CONNECTION_STRING);
+            var date = DateTime.Now.ToString("dd/MM/yyyy hh:mm");
+
+            SqlCommand command = new SqlCommand(
+          "Insert into score VALUES('" + Guid.NewGuid() + "','" + quizId + "','" + userId + "'," + score + ",NULL,'" + DateTime.Now + "',NULL,'" + DateTime.Now + "'",
+          connection);
+            connection.Open();
+
+            return command.ExecuteNonQuery();
+        }
 
         private Quiz GetQuizRecords()
         {
@@ -217,6 +239,8 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
         public List<Options> OptionsList { get; set; }
 
         public bool IsAnswered { get; set; }
+
+
     }
 
     public class Options
