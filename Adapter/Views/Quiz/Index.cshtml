@@ -4,39 +4,61 @@
     ViewBag.Title = "Question";
 }
 
-<h2>Question</h2>
 
 
-<div id="quizwaitdiv">
-    <span> Quiz will start in few moments...</span>
-</div>
-@using (Html.BeginForm())
-{
-    <div id="quizpanel" style="display:none">
+<div class="container" style="height:700px">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Question</h2>
+        </div>
+    </div>
+    <div id="quizwaitdiv" class="row">
+        <div class="col-md-12">
+        <span> Quiz will start in few moments...</span>
+            </div>
+    </div>
+    @using (Html.BeginForm())
+    {
+        <div id="quizpanel" style="display:none">
 
-        @if (ViewBag.IsCompletedQuestions != true)
-        {
-
-            @Html.HiddenFor(x => x.Id)
-
-            @Model.Description
-            <br />
-            foreach (var option in Model.OptionsList)
+            @if (ViewBag.IsCompletedQuestions != true)
             {
-                @Html.RadioButton("chkCorrectAnswer", option.IsAnswer) @option.Description
-                <br />
+
+                <div class="row">
+                    <div class="col-md-12">
+                        @Html.HiddenFor(x => x.Id)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <Span class="bg-primary">@Model.Description</Span>
+                    </div>
+                </div>
+                foreach (var option in Model.OptionsList)
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            @Html.RadioButton("chkCorrectAnswer", option.IsAnswer) @option.Description
+                        </div>
+                    </div>
+                }
+                <div class="row" style="margin-top:15px">
+                    <div class="col-md-12">
+                        <span class="bg bg-info">Please wait for others to complete...</span>
+                    </div>
+                </div>
+
+            }
+            else
+            {
+                <p>Hi @ViewBag.UserName. You have successfully completed your quiz. You got @ViewBag.Score. Congratulations</p>
             }
 
-            <button class="btn btn-primary" id="answerBtn">Answer</button>
-        }
-        else
-        {
-            <p>Hi @ViewBag.UserName. You have successfully completed your quiz. You got @ViewBag.Score. Congratulations</p>
-        }
 
+        </div>
+    }
+</div>
 
-    </div>
-}
 
 
 @if (ViewBag.FromPost == false)
@@ -50,31 +72,46 @@
             setTimeout(function () {
                 $("#quizpanel").show();
                 $("#quizwaitdiv").hide();
-
+                setTimeout(function () {
+                    $("form").submit();
+                }, 10000);
 
             }, adjustedDate - uiDate.getTime());
+        });
+    </script>
+}
+else if (ViewBag.IsCompletedQuestions != true)
+    {
+    <script>
+        $(document).ready(function () {
+            $("#quizpanel").show();
+            $("#quizwaitdiv").hide();
+            setTimeout(function () {
+                $("form").submit();
+            }, 10000);
         });
     </script>
 }
 else
 {
     <script>
-        $(document).ready(function () {
+$(document).ready(function() {
             $("#quizpanel").show();
             $("#quizwaitdiv").hide();
-        });
+        
+    });
     </script>
 }
-<script>
-    $(document).ready(function () {
+@*<script>
+        $(document).ready(function () {
 
 
-        $("#answerBtn").on("click", function () {
-            $("#answerBtn").attr("disabled", true);
-            setTimeout(function () {
-                $("form").submit();
-            }, 10000);
+            $("#answerBtn").on("click", function () {
+                $("#answerBtn").attr("disabled", true);
+                setTimeout(function () {
+                    $("form").submit();
+                }, 10000);
+            });
+
         });
-
-    });
-</script>
+    </script>*@

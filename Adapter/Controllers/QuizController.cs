@@ -25,6 +25,10 @@ namespace Adapter.Controllers
                 questions = GetQuizQuestion(quiz.Id);
 
                 var user = (User)Session["user"];
+                if (user == null)
+                {
+                    return RedirectToAction("index", "home");
+                }
                 user.QuizId = quiz.Id;
                 Session["user"] = user;
 
@@ -64,7 +68,7 @@ namespace Adapter.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(QuestionOptions options, bool chkCorrectAnswer)
+        public ActionResult Index(QuestionOptions options, bool chkCorrectAnswer=false)
         {
             if (chkCorrectAnswer)
             {
