@@ -32,10 +32,10 @@ namespace Adapter.Controllers
             }
             else
             {
-                //var quizList = (List<QuestionOptions>)Session["Questions"];
+                var quizList = (List<QuestionOptions>)Session["Questions"];
 
-                ObjectCache cache = MemoryCache.Default;
-                var quizList = (List<QuestionOptions>)cache.Get("Questions");
+                //ObjectCache cache = MemoryCache.Default;
+                //var quizList = (List<QuestionOptions>)cache.Get("Questions");
 
                 questions = quizList.Where(x => x.IsAnswered == false).FirstOrDefault();
                 ViewBag.FromPost = true;
@@ -68,18 +68,18 @@ namespace Adapter.Controllers
                 Session["user"] = user;
             }
 
-            ObjectCache cache = MemoryCache.Default;
-            var quizList = (List<QuestionOptions>)cache.Get("Questions");
-            //var quizList = (List<QuestionOptions>)Session["Questions"];
+            //ObjectCache cache = MemoryCache.Default;
+            //var quizList = (List<QuestionOptions>)cache.Get("Questions");
+            var quizList = (List<QuestionOptions>)Session["Questions"];
             int index = quizList.FindIndex(a => a.Id == options.Id);
             var quiz = quizList[index];
             quiz.IsAnswered = true;
             quizList[index] = quiz;
-            //Session["Questions"] = quizList;
+            Session["Questions"] = quizList;
                 // Store data in the cache    
-                CacheItemPolicy cacheItemPolicy = new CacheItemPolicy();
-                cacheItemPolicy.AbsoluteExpiration = DateTime.Now.AddHours(1.0);
-                cache.Add("Questions", quizList, cacheItemPolicy);
+                //CacheItemPolicy cacheItemPolicy = new CacheItemPolicy();
+                //cacheItemPolicy.AbsoluteExpiration = DateTime.Now.AddHours(1.0);
+                //cache.Add("Questions", quizList, cacheItemPolicy);
 
 
 
@@ -154,12 +154,12 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
             }
 
             // quiz.OptionsList = options;
-            //Session["Questions"] = quizList;
-            ObjectCache cache = MemoryCache.Default;
+            Session["Questions"] = quizList;
+            //ObjectCache cache = MemoryCache.Default;
             // Store data in the cache    
-            CacheItemPolicy cacheItemPolicy = new CacheItemPolicy();
-            cacheItemPolicy.AbsoluteExpiration = DateTime.Now.AddHours(1.0);
-            cache.Add("Questions", quizList, cacheItemPolicy);
+            //CacheItemPolicy cacheItemPolicy = new CacheItemPolicy();
+            //cacheItemPolicy.AbsoluteExpiration = DateTime.Now.AddHours(1.0);
+            //cache.Add("Questions", quizList, cacheItemPolicy);
             return quizList.FirstOrDefault();
         }
 
