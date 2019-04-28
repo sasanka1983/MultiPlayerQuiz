@@ -172,6 +172,7 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Quiz\Index.cshtml" />
+    <Content Include="Views\Quiz\List.cshtml" />
     <Content Include="Views\Ranking\GetRanking.cshtml" />
   </ItemGroup>
   <ItemGroup>
