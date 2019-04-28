@@ -78,7 +78,7 @@ namespace Adapter.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(QuestionOptions options, bool chkCorrectAnswer)
+        public ActionResult Index(QuestionOptions options, bool chkCorrectAnswer=false)
         {
             if (chkCorrectAnswer)
             {
@@ -199,12 +199,39 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
             SqlConnection connection = new SqlConnection(CONNECTION_STRING);
             var date = DateTime.Now.ToString("dd/MM/yyyy hh:mm");
 
-            SqlCommand command = new SqlCommand(
-          @"Update quiz SET IsQuizCompleted=1 Where id='" + quizId + "' ; Update score set score =" + score + " where userid='" + userId + "' AND quizId='" + quizId + "'",
-          connection);
+            var dsd = "SElect * from score where userid='" + userId + "' AND quizId='" + quizId + "'";
+
+
+            SqlCommand command = new SqlCommand(dsd, connection);
             connection.Open();
 
-            return command.ExecuteNonQuery();
+            SqlDataReader reader = command.ExecuteReader();
+
+            if (reader.HasRows)
+            {
+
+                reader.Close();
+
+                command = new SqlCommand(
+      @"Update quiz SET IsQuizCompleted=1 Where id='" + quizId + "' ; Update score set score =" + score + " where userid='" + userId + "' AND quizId='" + quizId + "'",
+      connection);
+
+                return command.ExecuteNonQuery();
+            }
+            else
+            {
+                reader.Close();
+
+                command = new SqlCommand(
+      //@"Update quiz SET IsQuizCompleted=1 Where id='" + quizId + "' ; Update score set score =" + score + " where userid='" + userId + "' AND quizId='" + quizId + "'",
+      @"Update quiz SET IsQuizCompleted=1 Where id='" + quizId + "' ;  INSERT INTO score VALUES(newid(),'" + quizId + "','" + userId + "', " + score + ",null,getdate(),null,getdate())",
+
+      connection);
+
+                return command.ExecuteNonQuery();
+            }
+
+
         }
 
         private List<Quiz> GetAllQuizRecords(Guid userId)
