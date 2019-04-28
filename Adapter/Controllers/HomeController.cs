@@ -31,7 +31,7 @@ namespace Adapter.Controllers
             {
                 Session["user"] = user;
 
-                return RedirectToAction("Index", "Quiz");
+                return RedirectToAction("List", "Quiz");
             }
             return RedirectToAction("Index", new { message = "Credentials are incorrect" });
             // return View();

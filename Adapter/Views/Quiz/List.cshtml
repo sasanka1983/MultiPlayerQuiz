@@ -10,9 +10,18 @@
 @webGrid.GetHtml(
         htmlAttributes: new { @id = "WebGrid", @class = "Grid" },
         columns: webGrid.Columns(
-                 webGrid.Column("Id", "Id"),
-                 webGrid.Column("Name", "Name"),
-                 webGrid.Column("StartTime", "StartTime")))
+                          // webGrid.Column(header: "Scheduled", format: @<text><input name="chkscheduled"
+                          //                                                        type="checkbox" value="@item.ID" /></text>),
+
+
+                          webGrid.Column(
+                                format: @<text> <input type="checkbox" value="@item.IsScheduled" name="ids" /> </text>,
+                                        header: "{checkall}"
+                                    ),
+
+                                 webGrid.Column("Id", "Id"),
+                                 webGrid.Column("Name", "Name"),
+                                 webGrid.Column("StartTime", "StartTime")))
 
 
 <style type="text/css">

@@ -24,17 +24,21 @@ namespace Adapter.Controllers
 
                 questions = GetQuizQuestion(quiz.Id);
 
-                if(questions==null)
+                if (questions == null)
                 {
                     ViewBag.ErrorMessage = "No questions available in the quiz.";
                     return View();
                 }
 
+
                 var user = (User)Session["user"];
+
                 if (user == null)
                 {
                     return RedirectToAction("index", "home");
                 }
+
+
                 user.QuizId = quiz.Id;
                 Session["user"] = user;
 
@@ -74,7 +78,7 @@ namespace Adapter.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(QuestionOptions options, bool chkCorrectAnswer=false)
+        public ActionResult Index(QuestionOptions options, bool chkCorrectAnswer)
         {
             if (chkCorrectAnswer)
             {
@@ -98,7 +102,9 @@ namespace Adapter.Controllers
 
         public ActionResult List()
         {
-            var quizList = GetAllQuizRecords();
+            var user = (User)Session["user"];
+
+            var quizList = GetAllQuizRecords(user.Id);
             return View(quizList);
         }
 
@@ -201,13 +207,14 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
             return command.ExecuteNonQuery();
         }
 
-        private List<Quiz> GetAllQuizRecords()
+        private List<Quiz> GetAllQuizRecords(Guid userId)
         {
             List<Quiz> quizList = new List<Quiz>();
 
             SqlConnection connection = new SqlConnection(CONNECTION_STRING);
             SqlCommand command = new SqlCommand(
-          "SELECT * FROM Quiz where IsQuizCompleted=0 AND StartTime",
+          @"select quiz.Id,quiz.Name,StartTime,case when Score.UserId is null then 0 else  1 end as IsScheduled from quiz
+left join(select * from score where userid = '" + userId + "') Score on quiz.id = Score.QuizId where IsQuizCompleted=0 AND StartTime>='" + DateTime.Now + "'",
           connection);
             connection.Open();
 
@@ -224,7 +231,7 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
                     quiz.Name = Convert.ToString(reader["Name"]);
                     quiz.StartTime = Convert.ToDateTime(reader["StartTime"]);
                     quiz.ElapseTime = Convert.ToInt32(reader["ElapseTime"]);
-
+                    quiz.IsScheduled = Convert.ToBoolean(reader["IsScheduled"]);
                     quizList.Add((quiz));
                 }
             }
@@ -275,6 +282,7 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
         public string Name { get; set; }
         public DateTime StartTime { get; set; }
         public int ElapseTime { get; set; }
+        public bool IsScheduled { get; set; }
     }
 
     public class QuestionOptions
