@@ -230,7 +230,7 @@ left join(select * from score where userid = '" + userId + "') Score on quiz.id 
                     quiz.Id = new Guid(Convert.ToString(reader["Id"]));
                     quiz.Name = Convert.ToString(reader["Name"]);
                     quiz.StartTime = Convert.ToDateTime(reader["StartTime"]);
-                    quiz.ElapseTime = Convert.ToInt32(reader["ElapseTime"]);
+                    // quiz.ElapseTime = Convert.ToInt32(reader["ElapseTime"]);
                     quiz.IsScheduled = Convert.ToBoolean(reader["IsScheduled"]);
                     quizList.Add((quiz));
                 }
@@ -312,6 +312,7 @@ left join(select * from score where userid = '" + userId + "') Score on quiz.id 
         public string Password { get; set; }
         public Guid QuizId { get; set; }
         public int Score { get; set; }
+
         public string Name { get; set; }
     }
 
