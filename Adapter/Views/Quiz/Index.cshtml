@@ -6,27 +6,67 @@
 
 <h2>Question</h2>
 
-<p>Question </p>
-@using (Html.BeginForm("Index", "Quiz", FormMethod.Post))
+
+<div id="quizwaitdiv">
+    <span> Quiz will start in few moments...</span>
+</div>
+@using (Html.BeginForm())
 {
+    <div id="quizpanel" style="display:none">
+        @Html.HiddenFor(x => x.Id)
 
-    @Html.HiddenFor(x => x.Id)
-
-    @Model.Description
-    <br />
-    foreach (var option in Model.OptionsList)
-    {
-        @Html.RadioButton("chkCorrectAnswer", option.IsAnswer) @option.Description
-        @*<label for="@answer.ID">answer.Text</label>
-
-            @Html.RadioButton("options", 1) @option.Description*@
+        @Model.Description
         <br />
-    }
+        @foreach (var option in Model.OptionsList)
+        {
+            @Html.RadioButton("chkCorrectAnswer", option.IsAnswer) @option.Description
+            @*<label for="@answer.ID">answer.Text</label>
 
-    <input type="submit" name="next" />
+                @Html.RadioButton("options", 1) @option.Description*@
+            <br />
+        }
+        @*<span>Time left in secs :</span><span id="elapsedTime" />*@
+        <button class="btn btn-primary" id="answerBtn">Answer</button>
+    </div>
+}
+
+
+@if (ViewBag.FromPost == false)
+{
+    <script>
+
+        $(document).ready(function () {
+            var quizDate = new Date();
+            var adjustedDate = quizDate.getTime() + 8000;
+            var uiDate = new Date();
+            setTimeout(function () {
+                $("#quizpanel").show();
+                $("#quizwaitdiv").hide();
+
+
+            }, adjustedDate - uiDate.getTime());
+        });
+    </script>
+}
+else
+{
+    <script>
+        $(document).ready(function () {
+            $("#quizpanel").show();
+            $("#quizwaitdiv").hide();
+        });
+    </script>
 }
 <script>
     $(document).ready(function () {
-        alert("hello world");
+
+
+        $("#answerBtn").on("click", function () {
+            $("#answerBtn").attr("disabled",true);
+            setTimeout(function () {
+                $("form").submit();
+            }, 10000);
+        });
+
     });
-</script>
+        </script>
