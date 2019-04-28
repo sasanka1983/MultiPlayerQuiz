@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Web;
 using System.Web.Mvc;
 //using Microsoft.Practices.EnterpriseLibrary.Caching;
@@ -30,7 +31,10 @@ namespace Adapter.Controllers
             }
             else
             {
-                var quizList = (List<QuestionOptions>)Session["Questions"];
+                //var quizList = (List<QuestionOptions>)Session["Questions"];
+
+                ObjectCache cache = MemoryCache.Default;
+                var quizList = (List<QuestionOptions>)cache.Get("Questions");
 
                 questions = quizList.Where(x => x.IsAnswered == false).FirstOrDefault();
             }
@@ -46,13 +50,26 @@ namespace Adapter.Controllers
                 user.Score = user.Score + 5;
                 Session["user"] = user;
             }
+            ObjectCache cache = MemoryCache.Default;
+            var quizList = (List<QuestionOptions>)cache.Get("Questions");
 
-            var quizList = (List<QuestionOptions>)Session["Questions"];
+            //var quizList = (List<QuestionOptions>)Session["Questions"];
             int index = quizList.FindIndex(a => a.Id == options.Id);
             var quiz = quizList[index];
             quiz.IsAnswered = true;
             quizList[index] = quiz;
-            Session["Questions"] = quizList;
+            //Session["Questions"] = quizList;
+
+           
+            if (!cache.Contains("Questions"))
+            {
+                // Store data in the cache    
+                CacheItemPolicy cacheItemPolicy = new CacheItemPolicy();
+                cacheItemPolicy.AbsoluteExpiration = DateTime.Now.AddHours(1.0);
+                cache.Add("Questions", quizList, cacheItemPolicy);
+            }
+           
+
 
 
 
@@ -122,7 +139,17 @@ INNER JOIN questionoptions on questionoptions.QuestionId = quizquestions.Questio
             }
 
             // quiz.OptionsList = options;
-            Session["Questions"] = quizList;
+           // Session["Questions"] = quizList;
+            ObjectCache cache = MemoryCache.Default;
+            if (!cache.Contains("Questions"))
+            {
+                // Store data in the cache    
+                CacheItemPolicy cacheItemPolicy = new CacheItemPolicy();
+                cacheItemPolicy.AbsoluteExpiration = DateTime.Now.AddHours(1.0);
+                cache.Add("Questions", quizList, cacheItemPolicy);
+            }
+            var information = (List<QuestionOptions>)cache.Get("Questions");
+
             return quizList.FirstOrDefault();
         }
 
